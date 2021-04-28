@@ -1,4 +1,4 @@
-from res_data_generator import *
+from Data_processing.RMP_data_generator import *
 from keras import models
 from keras.callbacks import *
 from keras.utils.generic_utils import CustomObjectScope

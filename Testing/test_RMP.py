@@ -1,16 +1,11 @@
-# from data_generator import *
-from res_data_generator import *
+from Data_processing.RMP_data_generator import *
 from keras import models
 from keras.callbacks import *
 from keras.utils.generic_utils import CustomObjectScope
-from SHN import *
+from Networks.RMP_Net import *
 from keras.optimizers import SGD
 from keras.losses import mean_squared_error
-from resnet import *
-# from ohem import OHEM
-from keras.backend.tensorflow_backend import set_session
 import os
-import tensorflow as tf
 
 train_path = "/data0/zy/db/medical/kpt256/train"
 # test_path = "/data0/zy/db/medical/kpt256/test"

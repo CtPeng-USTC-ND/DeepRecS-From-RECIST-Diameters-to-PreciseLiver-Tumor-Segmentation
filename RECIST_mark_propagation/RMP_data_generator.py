@@ -6,7 +6,7 @@ import glob
 import skimage.io as io
 import skimage.transform as trans
 import cv2
-from Data_processing.htmapGene import *
+from RECIST_mark_propagation.htmapGene import *
 from skimage.measure import label, regionprops
 import random
 

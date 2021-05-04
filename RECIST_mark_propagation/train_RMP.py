@@ -1,8 +1,8 @@
-from Data_processing.RMP_data_generator import *
+from RECIST_mark_propagation.RMP_data_generator import *
 from keras import models
 from keras.callbacks import *
 from keras.utils.generic_utils import CustomObjectScope
-from Networks.RMP_Net import *
+from RECIST_mark_propagation.RMP_Net import *
 from keras.optimizers import SGD
 from keras.losses import mean_squared_error
 import os

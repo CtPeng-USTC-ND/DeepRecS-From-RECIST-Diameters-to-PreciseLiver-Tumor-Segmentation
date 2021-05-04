@@ -33,7 +33,7 @@ from keras.utils import conv_utils
 from keras import regularizers
 from keras.utils.data_utils import get_file
 import tensorflow as tf
-from attention_module import attach_attention_module
+from liver_tumor_segmentation.attention_module import attach_attention_module
 
 
 def get_crop_shape(target, refer):

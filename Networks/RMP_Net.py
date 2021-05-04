@@ -1,3 +1,4 @@
+#reference: Staceked Hourglass Network, https://github.com/yuanyuanli85/Stacked_Hourglass_Network_Keras
 from keras.models import *
 from keras.layers import *
 from keras.optimizers import Adam, RMSprop
@@ -17,38 +18,6 @@ def intersect(b_r, b_c, t_r, t_c,l_r, l_c,r_r, r_c):
         if K.less_equal(res2, z) is True:
             return 0
     return 1
-
-def orthometric_dice_coef(y_true, y_pred):
-    cos=K.variable([0.])
-    long = K.variable([0.])
-    short = K.variable([0.])
-    its = K.variable([0.])
-    smooth = 1.e-5
-    # for i in range(K.cast(K.shape(y_pred)[0], 'int32')):
-    for i in range(20):
-        top = K.flatten(y_pred[i, :, :, 0])
-        bottom=K.flatten(y_pred[i, :, :, 1])
-        left = K.flatten(y_pred[i, :, :, 2])
-        right = K.flatten(y_pred[i, :, :, 3])
-        b_r= K.argmax(bottom) / 64
-        b_c = K.argmax(bottom) % 64
-        t_r = K.argmax(top) / 64
-        t_c = K.argmax(top) % 64
-        v11= K.cast(b_r, 'float32')-K.cast(t_r, 'float32')
-        v12=K.cast(b_c, 'float32')-K.cast(t_c, 'float32')
-        l_r = K.argmax(left) / 64
-        l_c = K.argmax(left) % 64
-        r_r = K.argmax(right) / 64
-        r_c = K.argmax(right) % 64
-        v21 = K.cast(r_r, 'float32')-K.cast(l_r, 'float32')
-        v22 = K.cast(r_c, 'float32')-K.cast(l_c, 'float32')
-        cos = cos + K.abs((v11*v21+v12*v22)/(K.sqrt(v11*v11+v12*v12)*K.sqrt(v21*v21+v22*v22)+smooth))
-        # long = long + 64/(K.sqrt(v11*v11+v12*v12)+64.)
-        # short = short + 64/(K.sqrt(v21*v21+v22*v22)+64.)
-        its = its + intersect(b_r, b_c, t_r, t_c,l_r, l_c,r_r, r_c)
-        # cos_sum = cos_sum+K.abs(K.sum(v1*v2)/(K.sqrt(K.sum(v1*v1))*K.sqrt(K.sum(v2*v2))))
-    # return 1. - dice_coef(y_true, y_pred)+0.1*cos+0.01*long +0.01*short
-    return (1. - dice_coef(y_true, y_pred))*0.2 + 0.02 * cos + 0.02*its
 
 def create_hourglass_network(num_classes, num_stacks, inres, outres, bottleneck):
 

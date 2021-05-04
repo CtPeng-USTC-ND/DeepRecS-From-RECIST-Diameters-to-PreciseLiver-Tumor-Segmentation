@@ -1,8 +1,8 @@
-from Data_processing.RMP_data_generator import *
+from RECIST_mark_propagation.RMP_data_generator import *
 from keras import models
 from keras.callbacks import *
 from keras.utils.generic_utils import CustomObjectScope
-from Networks.RMP_Net import *
+from RECIST_mark_propagation.RMP_Net import *
 from keras.optimizers import SGD
 from keras.losses import mean_squared_error
 import os
@@ -21,6 +21,7 @@ model = create_hourglass_network(num_classes=4, num_stacks=2,
 model.compile(optimizer=SGD(lr=4e-4, decay=1e-6, momentum=0.9, nesterov=True),
               loss=mean_squared_error, metrics=['mse'])
 
+model.load_weights('/data0/zy/proj/SHN/Models/2021-05-04_22-14/24-0.0058.h5', by_name=True)
 results = model.predict_generator(testGene,1000, verbose=1)
 save_path = os.path.join(test_path,'recist')
 if not os.path.exists(save_path):

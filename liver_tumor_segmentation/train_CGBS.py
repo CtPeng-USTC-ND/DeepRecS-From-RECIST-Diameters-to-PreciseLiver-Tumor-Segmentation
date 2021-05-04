@@ -1,6 +1,6 @@
-from Networks.CGBS_Net import *
+from liver_tumor_segmentation.CGBS_Net import *
 from keras.optimizers import *
-from Data_processing.CGBS_data_generator import  *
+from liver_tumor_segmentation.CGBS_data_generator import  *
 from keras.callbacks import *
 import os
 from keras.callbacks import ReduceLROnPlateau

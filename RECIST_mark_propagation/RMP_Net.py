@@ -6,19 +6,6 @@ from keras.losses import mean_squared_error
 import keras.backend as K
 import numpy as np
 
-def intersect(b_r, b_c, t_r, t_c,l_r, l_c,r_r, r_c):
-    z = K.variable([1.e-6], dtype='float64')
-    u = (r_c-b_c)*(t_r-b_r)-(t_c-b_c)*(r_r-b_r)
-    v = (l_c - t_c) * (t_r - b_r) - (t_c - b_c) * (l_r - b_r)
-    w = (b_c - r_c) * (l_r - r_r) - (l_c - r_c) * (b_r - r_r)
-    z = (t_c - r_c) * (l_r - r_r) - (l_c - r_c) * (t_r - r_r)
-    res1 = u*v
-    res2 = w*z
-    if K.less_equal(res1, z) is True:
-        if K.less_equal(res2, z) is True:
-            return 0
-    return 1
-
 def create_hourglass_network(num_classes, num_stacks, inres, outres, bottleneck):
 
     input = Input(shape=(inres[0], inres[1], 3))

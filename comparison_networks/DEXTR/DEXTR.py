@@ -9,7 +9,7 @@ from keras.models import Model
 
 import keras.backend as K
 
-from networks.DEXTR_classifiers import build_pyramid_pooling_module
+from comparison_networks.DEXTR.DEXTR_classifiers import build_pyramid_pooling_module
 
 def BN(axis, name=""):
     return BatchNormalization(axis=axis, momentum=0.1, name=name, epsilon=1e-5)

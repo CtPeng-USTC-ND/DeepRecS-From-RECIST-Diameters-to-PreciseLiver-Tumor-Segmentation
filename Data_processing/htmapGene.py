@@ -53,7 +53,7 @@ def generate_gtmap(trans, img, path, name, sigma=3, inres = (256,256), outres=(6
             [ptr, ptc] = line.split(',')
         else:
             [ptr,ptc]=line[:-1].split(',')
-        pt = [int(ptc), int(ptr)]
+        pt = [int(int(ptc)/4), int(int(ptr)/4)]
         new_pt = np.array([pt[0], pt[1], 1.]).T
         new_pt = np.dot(kpt_t, new_pt)
         pts.append(new_pt[:2].astype(int))
@@ -86,35 +86,8 @@ def generate_gtmap(trans, img, path, name, sigma=3, inres = (256,256), outres=(6
 
     return img, gtmap
 
-def _get_transform(flip, tx, ty, rot, scale, res):
+def _get_transform(rot, scale, res):
     t = np.eye(3, dtype='float32')
-    if flip==0:
-        F= np.zeros((3, 3))
-        F[0,0] = -1
-        F[0, 2] = res[0]-1
-        F[1,1] = 1
-        F[2,2] = 1
-        t = np.dot(F,t)
-    elif flip ==1:
-        F = np.zeros((3, 3))
-        F[0, 0] = 1
-        F[1, 1] = -1
-        F[1, 2] = res[0] - 1
-        F[2, 2] = 1
-        t = np.dot(F, t)
-    elif flip == 2:
-        F = np.zeros((3, 3))
-        F[0, 0] = -1
-        F[0, 2] = res[0] - 1
-        F[1, 1] = -1
-        F[1, 2] = res[0] - 1
-        F[2, 2] = 1
-        t = np.dot(F, t)
-    trans = np.eye(3, dtype='float32')
-    trans[0,2] = tx
-    trans[1, 2] = ty
-    t = np.dot(trans, t)
-    #if not rot ==0:
     R = cv2.getRotationMatrix2D((res[0] / 2, res[0] / 2), rot, scale)
     tmp = np.eye(3, dtype='float32')
     tmp[:2,:] = R
@@ -124,18 +97,13 @@ def _get_transform(flip, tx, ty, rot, scale, res):
     return t
 
 def get_transform(inres= (256, 256), outres=(64,64)):
-    flip, translatex, translatey, rot,scale = (-1, 0, 0, 0, 1.0)
+    rot,scale = (0, 1.0)
     if random.choice([0, 1]):
-        flip = np.random.randint(0, 3)
-    if random.choice([0,1]):
-        translatex = np.random.randint(-1 * 5, 6)
-        translatey = np.random.randint(-1 * 5, 6)
-    if random.choice([0, 1]):
-        rot = np.random.randint(-1 * 90, 91)
+        rot = np.random.randint(-1 * 30, 31)
     if random.choice([0, 1]):
         scale = np.random.uniform(0.8, 1.2)
     # print(flip,translatex, translatey, rot, scale)
-    img_t = _get_transform(flip, translatex, translatey, rot,scale, inres)
-    kpt_t = _get_transform(flip, translatex, translatey, rot,scale, outres)
+    img_t = _get_transform(rot,scale, inres)
+    kpt_t = _get_transform(rot,scale, outres)
 
     return img_t, kpt_t

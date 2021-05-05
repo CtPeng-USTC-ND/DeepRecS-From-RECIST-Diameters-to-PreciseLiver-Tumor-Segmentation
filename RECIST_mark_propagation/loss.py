@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 smooth=1.
-batch_size = 16
+batch_size = 20
 
 def est_argmax(x):
     x = Activation('sigmoid')(x)

@@ -12,7 +12,7 @@ import keras.backend as K
 import os
 import time
 from skimage.transform import resize
-from custom_layers import Scale
+from comparison_networks.custom_layers import Scale
 from keras.layers import Reshape
 
 K.set_image_dim_ordering('tf')

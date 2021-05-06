@@ -5,7 +5,7 @@ import numpy as np
 from keras.losses import mean_squared_error
 
 smooth=1.
-batch_size = 16
+batch_size = 20
 
 def est_argmax(x):
     x = Activation('sigmoid')(x)
@@ -16,37 +16,43 @@ def est_argmax(x):
     out = K.sum(out)
     return out
 
-def mse_cosine_loss(y_true, y_pred):
-    mse = K.variable([0.])
+def orthometric_mean_squared_error(y_true, y_pred):
+    # mse = K.variable([0.])
     cos=K.variable([0.])
     for i in range(batch_size):
-        t_r, t_c, b_r, b_c, l_r, l_c, r_r, r_c = get_point(i, y_pred)
-        pred_pts = tf.convert_to_tensor([t_r, t_c, b_r, b_c, l_r, l_c, r_r, r_c], 'float32')
-        t_r_, t_c_, b_r_, b_c_, l_r_, l_c_, r_r_, r_c_ = get_point(i, y_true)
-        gt_pts = tf.convert_to_tensor([t_r_, t_c_, b_r_, b_c_, l_r_, l_c_, r_r_, r_c_], 'float32')
-        mse = mse+ mean_squared_error(gt_pts, pred_pts)
-        v11 = K.cast(b_r, 'float32') - K.cast(t_r, 'float32')
-        v12 = K.cast(b_c, 'float32') - K.cast(t_c, 'float32')
-        v21 = K.cast(r_r, 'float32')-K.cast(l_r, 'float32')
-        v22 = K.cast(r_c, 'float32')-K.cast(l_c, 'float32')
+        long_l_r, long_l_c, long_r_r, long_r_c, short_l_r, short_l_c, short_r_r, short_r_c = get_point(i, y_pred)
+        # pred_pts = tf.convert_to_tensor([long_l_r, long_l_c, long_r_r, long_r_c,
+        #                                  short_l_r, short_l_c, short_r_r, short_r_c], 'float32')
+
+        # long_l_r_, long_l_c_, long_r_r_, long_r_c_, short_l_r_, short_l_c_, short_r_r_, short_r_c_ = get_point(i, y_true)
+        # gt_pts = tf.convert_to_tensor([long_l_r_, long_l_c_, long_r_r_, long_r_c_,
+        #                                short_l_r_, short_l_c_, short_r_r_, short_r_c_], 'float32')
+
+        # mse = mse+ mean_squared_error(gt_pts, pred_pts)
+        v11 = K.cast(long_r_r, 'float32') - K.cast(long_l_r, 'float32')
+        v12 = K.cast(long_r_c, 'float32') - K.cast(long_l_c, 'float32')
+        v21 = K.cast(short_r_r, 'float32')-K.cast(short_l_r, 'float32')
+        v22 = K.cast(short_r_c, 'float32')-K.cast(short_l_c, 'float32')
         cos = cos + K.abs((v11*v21+v12*v22)/(K.sqrt(v11*v11+v12*v12)*K.sqrt(v21*v21+v22*v22)+smooth))
-    return 0.05*(mse+cos)
+    # return 0.05*(mse+0*cos)
+    return mean_squared_error(y_true,y_pred)+cos/batch_size
 
 def get_point(i, y_pred):
-    topm = y_pred[i, :, :, 0]
-    bottomm = y_pred[i, :, :, 1]
-    leftm = y_pred[i, :, :, 2]
-    rightm = y_pred[i, :, :, 3]
-    tp_f = K.flatten(topm)
-    bt_f = K.flatten(bottomm)
-    lt_f = K.flatten(leftm)
-    rt_f = K.flatten(rightm)
-    t_r = est_argmax(tp_f) / 64
-    t_c = est_argmax(tp_f) % 64
-    b_r = est_argmax(bt_f) / 64
-    b_c = est_argmax(bt_f) % 64
-    l_r = est_argmax(lt_f) / 64
-    l_c = est_argmax(lt_f) % 64
-    r_r = est_argmax(rt_f) / 64
-    r_c = est_argmax(rt_f) % 64
-    return t_r, t_c, b_r, b_c, l_r, l_c, r_r, r_c
+    long_l = y_pred[i, :, :, 0]
+    long_r = y_pred[i, :, :, 1]
+    short_l = y_pred[i, :, :, 2]
+    short_r = y_pred[i, :, :, 3]
+    f_long_l = K.flatten(long_l)
+    f_long_r = K.flatten(long_r)
+    f_short_l = K.flatten(short_l)
+    f_short_r = K.flatten(short_r)
+    long_l_r = est_argmax(f_long_l) / 64
+    long_l_c = est_argmax(f_long_l) % 64
+    long_r_r = est_argmax(f_long_r) / 64
+    long_r_c = est_argmax(f_long_r) % 64
+    short_l_r = est_argmax(f_short_l) / 64
+    short_l_c = est_argmax(f_short_l) % 64
+    short_r_r = est_argmax(f_short_r) / 64
+    short_r_c = est_argmax(f_short_r) % 64
+    return long_l_r, long_l_c, long_r_r, long_r_c, \
+        short_l_r, short_l_c, short_r_r, short_r_c

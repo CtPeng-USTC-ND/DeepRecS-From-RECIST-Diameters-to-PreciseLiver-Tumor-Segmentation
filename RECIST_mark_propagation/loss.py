@@ -16,7 +16,7 @@ def est_argmax(x):
     out = K.sum(out)
     return out
 
-def orthometric_mean_squared_error(y_true, y_pred):
+def mse_cosine_loss(y_true, y_pred):
     # mse = K.variable([0.])
     cos=K.variable([0.])
     for i in range(batch_size):

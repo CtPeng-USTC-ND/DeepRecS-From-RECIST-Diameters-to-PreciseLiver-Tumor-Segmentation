@@ -3,7 +3,7 @@ import keras.backend as K
 import tensorflow as tf
 import numpy as np
 
-smooth=1.
+smooth=1e-5
 batch_size = 20
 
 def est_argmax(x):
@@ -39,5 +39,5 @@ def mse_cosine_loss(y_true, y_pred):
         v12 = K.cast(b_c, 'float32') - K.cast(t_c, 'float32')
         v21 = K.cast(r_r, 'float32')-K.cast(l_r, 'float32')
         v22 = K.cast(r_c, 'float32')-K.cast(l_c, 'float32')
-        cosine = cosine + 0.05*K.abs((v11*v21+v12*v22)/(K.sqrt(v11*v11+v12*v12)*K.sqrt(v21*v21+v22*v22)+smooth))
+        cosine = cosine + 0.05*K.abs((v11*v21+v12*v22+smooth)/(K.sqrt(v11*v11+v12*v12)*K.sqrt(v21*v21+v22*v22)+smooth))
     return K.mean(K.square(y_pred - y_true), axis=-1)+ cosine

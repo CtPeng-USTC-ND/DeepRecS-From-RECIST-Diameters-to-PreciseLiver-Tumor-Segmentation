@@ -57,32 +57,29 @@ def generate_gtmap(trans, img, path, name, sigma=3, inres = (256,256), outres=(6
         new_pt = np.array([pt[0], pt[1], 1.]).T
         new_pt = np.dot(kpt_t, new_pt)
         pts.append(new_pt[:2].astype(int))
-    t, b, l, r = ([0,0],[0,0],[0,0],[0,0])
+    long_l, long_r, short_l, short_r = ([0,0],[0,0],[0,0],[0,0])
 
-    minx, miny, maxx, maxy = (64, 64, 0, 0)
-    for pt in pts:
-        if pt[1]<miny:
-            miny = pt[1]
-            t = pt
-        if pt[1]>maxy:
-            maxy = pt[1]
-            b = pt
-        if pt[0]<minx:
-            minx = pt[0]
-            l = pt
-        if pt[0]>maxx:
-            maxx = pt[0]
-            r = pt
+    if pts[0][1]<pts[1][1]:
+        long_l = pts[0]
+        long_r = pts[1]
+    else:
+        long_l = pts[1]
+        long_r = pts[0]
+    if pts[2][1]<pts[3][1]:
+        short_l = pts[2]
+        short_r = pts[3]
+    else:
+        short_l = pts[3]
+        short_r = pts[2]
 
-    # gtmap[:,:,i]=gaussian(ct,new_pt[:2].astype(int) ,sigma)
     ct0 = np.zeros((outres[0], outres[1]), dtype=float)
-    gtmap[:, :, 0] = gaussian(ct0, t, sigma)
+    gtmap[:, :, 0] = gaussian(ct0, long_l, sigma)
     ct1 = np.zeros((outres[0], outres[1]), dtype=float)
-    gtmap[:, :, 1] = gaussian(ct1, b, sigma)
+    gtmap[:, :, 1] = gaussian(ct1, long_r, sigma)
     ct2 = np.zeros((outres[0], outres[1]), dtype=float)
-    gtmap[:, :, 2] = gaussian(ct2, l, sigma)
+    gtmap[:, :, 2] = gaussian(ct2, short_l, sigma)
     ct3 = np.zeros((outres[0], outres[1]), dtype=float)
-    gtmap[:, :, 3] = gaussian(ct3, r, sigma)
+    gtmap[:, :, 3] = gaussian(ct3, short_r, sigma)
 
     return img, gtmap
 

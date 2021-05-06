@@ -30,7 +30,7 @@ def mse_cosine_loss(y_true, y_pred):
         v21 = K.cast(r_r, 'float32')-K.cast(l_r, 'float32')
         v22 = K.cast(r_c, 'float32')-K.cast(l_c, 'float32')
         cos = cos + K.abs((v11*v21+v12*v22)/(K.sqrt(v11*v11+v12*v12)*K.sqrt(v21*v21+v22*v22)+smooth))
-    return 0.05*(mse+0*cos)
+    return 0.05*(mse+cos)
 
 def get_point(i, y_pred):
     topm = y_pred[i, :, :, 0]

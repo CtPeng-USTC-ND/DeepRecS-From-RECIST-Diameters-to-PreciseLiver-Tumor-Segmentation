@@ -7,7 +7,7 @@ from keras.losses import mean_squared_error
 smooth=1.
 batch_size = 20
 
-def est_argmax(x, beta=1e3):
+def est_argmax(x, beta=2e2):
     return tf.reduce_sum(tf.cumsum(tf.ones_like(x)) * tf.exp(beta * x) / tf.reduce_sum(tf.exp(beta * x))) - 1
 
 def mse_cosine_loss(y_true, y_pred):

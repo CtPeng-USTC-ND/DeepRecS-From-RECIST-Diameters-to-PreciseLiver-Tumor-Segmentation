@@ -35,7 +35,7 @@ model = create_hourglass_network(num_classes=4, num_stacks=2,
                                  bottleneck=bottleneck_block)
 
 model.compile(optimizer=SGD(lr=4e-4, decay=1e-6, momentum=0.9, nesterov=True),
-              loss=mse_cosine_loss, metrics=['mse'])
+              loss=mean_squared_error, metrics=['mse'])
 
 model.fit_generator(generator=trainGene,verbose=1,
                     steps_per_epoch=5000, epochs=500,

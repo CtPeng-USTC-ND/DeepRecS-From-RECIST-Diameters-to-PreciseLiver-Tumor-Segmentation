@@ -7,14 +7,8 @@ from keras.losses import mean_squared_error
 smooth=1.
 batch_size = 20
 
-def est_argmax(x):
-    x = Activation('sigmoid')(x)
-    a = np.arange(64*64)
-    aa = tf.convert_to_tensor(a, dtype=tf.int32)
-    aa = K.cast(aa, 'float32')
-    out = x*aa
-    out = K.sum(out)
-    return out
+def est_argmax(x, beta=1e2):
+    return tf.reduce_sum(tf.cumsum(tf.ones_like(x)) * tf.exp(beta * x) / tf.reduce_sum(tf.exp(beta * x))) - 1
 
 def mse_cosine_loss(y_true, y_pred):
     # mse = K.variable([0.])
@@ -46,13 +40,14 @@ def get_point(i, y_pred):
     f_long_r = K.flatten(long_r)
     f_short_l = K.flatten(short_l)
     f_short_r = K.flatten(short_r)
-    long_l_r = est_argmax(f_long_l) / 64
-    long_l_c = est_argmax(f_long_l) % 64
-    long_r_r = est_argmax(f_long_r) / 64
-    long_r_c = est_argmax(f_long_r) % 64
-    short_l_r = est_argmax(f_short_l) / 64
-    short_l_c = est_argmax(f_short_l) % 64
-    short_r_r = est_argmax(f_short_r) / 64
-    short_r_c = est_argmax(f_short_r) % 64
+
+    long_l_r = est_argmax(f_long_l/tf.norm(f_long_l)) / 64
+    long_l_c = est_argmax(f_long_l/tf.norm(f_long_l)) % 64
+    long_r_r = est_argmax(f_long_r/tf.norm(f_long_r)) / 64
+    long_r_c = est_argmax(f_long_r/tf.norm(f_long_r)) % 64
+    short_l_r = est_argmax(f_short_l/tf.norm(f_short_l)) / 64
+    short_l_c = est_argmax(f_short_l/tf.norm(f_short_l)) % 64
+    short_r_r = est_argmax(f_short_r/tf.norm(f_short_r)) / 64
+    short_r_c = est_argmax(f_short_r/tf.norm(f_short_r)) % 64
     return long_l_r, long_l_c, long_r_r, long_r_c, \
         short_l_r, short_l_c, short_r_r, short_r_c
